@@ -4,6 +4,7 @@
 struct Heap {
     int *data;
     double *priority;
+    int *map;
     size_t size;
     size_t capacity;
 };
@@ -13,6 +14,7 @@ Heap *heap_init(int capacity) {
 
     h->data = malloc(sizeof(int) * capacity);
     h->priority = malloc(sizeof(double) * capacity);
+    h->map = malloc(sizeof(int) * capacity);
 
     h->size = 0;
     h->capacity = capacity;
@@ -23,6 +25,7 @@ Heap *heap_init(int capacity) {
 void heap_destroy(Heap *h) {
     free(h->data);
     free(h->priority);
+    free(h->map);
     free(h);
 }
 
@@ -35,27 +38,11 @@ void __heap_swap(Heap *h, int i, int j) {
     h->priority[j] = h->priority[i] - h->priority[j];
     h->priority[i] -= h->priority[j];
 
-    /* int tmp = h->data[i]; */
-    /* h->data[i] = h->data[j]; */
-    /* h->data[j] = tmp; */
-    /*  */
-    /* double tmp2 = h->priority[i]; */
-    /* h->priority[i] = h->priority[j]; */
-    /* h->priority[j] = tmp2; */
+    h->map[h->data[i]] = i;
+    h->map[h->data[j]] = j;
 }
 
 void __heapify_up(Heap *h, int i) {
-    /* while(i) { */
-    /*     int parent = (i - 1) / 2; */
-    /*  */
-    /*     if(h->priority[parent] > h->priority[i]) { */
-    /*         __heap_swap(h, h->data[parent], h->data[i]); */
-    /*         i = parent; */
-    /*     } */
-    /*     else */
-    /*         break; */
-    /* } */
-
     int parent = (i - 1) / 2;
 
     if(h->priority[parent] > h->priority[i]) {
@@ -65,28 +52,8 @@ void __heapify_up(Heap *h, int i) {
 }
 
 void __heapify_down(Heap *h, int i) {
-    /* while(i < h->size) { */
-    /*     int left = 2 * i + 1; */
-    /*     int right = 2 * i + 2; */
-    /*  */
-    /*     if(left >= h->size) */
-    /*         break; */
-    /*  */
-    /*     int min = left; */
-    /*     if(right < h->size && h->priority[right] < h->priority[left]) */
-    /*         min = right; */
-    /*  */
-    /*     if(h->priority[i] > h->priority[min]) { */
-    /*         __heap_swap(h, h->data[i], h->data[min]); */
-    /*         i = min; */
-    /*     } */
-    /*     else */
-    /*         break; */
-    /* } */
-
-
-    int left = i * 2 + 1;
-    int right = i * 2 + 2;
+    int left = (i >> 2) + 1;
+    int right = (i >> 2) + 2;
     int min = i;
 
     if(left >= 0 && left < h->size && h->priority[left] < h->priority[i])
@@ -102,6 +69,7 @@ void __heapify_down(Heap *h, int i) {
 
 void heap_insert(Heap *h, int data, double priority) {
     h->data[h->size] = data;
+    h->map[data] = h->size;
     h->priority[h->size++] = priority;
 
     __heapify_up(h, h->size - 1);
@@ -119,10 +87,18 @@ int heap_pop(Heap *h) {
 }
 
 void heap_decrease_key(Heap *h, int id, double value) {
-    h->priority[id] = value;
-    __heapify_up(h, id);
+    int i = h->map[id];
+    h->priority[i] = value;
+    __heapify_up(h, i);
 }
+
+double heap_get_priority(Heap *h, int id) {
+    return h->priority[h->map[id]];
+}
+
+int heap_min(Heap *h) { return h->data[0]; }
 
 int heap_empty(Heap *h) { return h->size == 0; }
 
 int heap_size(Heap *h) { return h->size; }
+
