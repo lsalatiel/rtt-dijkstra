@@ -1,6 +1,10 @@
 #ifndef _LINKED_LIST_H_
 #define _LINKED_LIST_H_
 
+#ifndef WEIGHTED
+#define WEIGHTED
+#endif
+
 #include <stdbool.h>
 
 typedef struct LinkedList LinkedList;
@@ -16,6 +20,8 @@ int linked_list_size(LinkedList* l);
 // adiciona um item no início da lista
 #ifdef WEIGHTED
 void linked_list_push_front(LinkedList* l, int val, double weight);
+
+double linked_list_get_weight(LinkedList *l, int val);
 #else
 void linked_list_push_front(LinkedList* l, int val);
 #endif
@@ -38,3 +44,4 @@ int list_iterator_next(ListIterator *it);
 bool list_iterator_is_over(ListIterator *it);
 
 #endif
+

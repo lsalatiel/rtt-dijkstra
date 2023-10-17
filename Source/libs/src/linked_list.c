@@ -78,6 +78,20 @@ void linked_list_push_front(LinkedList* l, int val, double weight) {
     l->size++;
 }
 
+double linked_list_get_weight(LinkedList *l, int val) {
+    Node *n = l->head;
+    
+    while(n != NULL) {
+        if(n->value == val)
+            return n->weight;
+        
+        n = n->next;
+    }
+
+    return 0.0;
+}
+
+
 #else
 void linked_list_push_front(LinkedList* l, int val) {
     Node *n = node_construct(val, l->head);
@@ -99,7 +113,7 @@ void linked_list_print(LinkedList* l) {
         printf("%d", n->value);
 #endif
         if(i != l->size - 1)
-            printf(", ");
+            printf("; ");
         
         n = n->next;
 
@@ -139,6 +153,7 @@ void linked_list_remove(LinkedList* l, int val) {
 }
 
 ListIterator *list_iterator_construct(LinkedList *l) {
+    if(l == NULL) return NULL;
     ListIterator *it = malloc(sizeof(ListIterator));
 
     it->current = l->head;

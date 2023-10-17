@@ -26,6 +26,7 @@ void graph_add_undirected_edge(Graph *g, int p, int q, double weight);
 
 void graph_add_directed_edge(Graph *g, int p, int q, double weight);
 
+double graph_get_weight(Graph *g, int p, int q);
 #else
 
 /**
