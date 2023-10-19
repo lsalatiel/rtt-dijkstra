@@ -8,6 +8,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void dijkstra(void** args);
+int *dijkstra_algorithm(Graph *g, int s, int t);
 
 #endif
