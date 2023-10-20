@@ -17,7 +17,10 @@ void __dijkstra_relax(Heap *h, double u_w, int v, double w) {
 
 int *dijkstra_algorithm(Graph *g, int s, int t) {
     int *path = malloc(sizeof(int) * graph_num_vertices(g) - 1);
-    for(int i = 0; i < graph_num_vertices(g); i++) path[i] = -1;
+    double cost = 0.0;
+    for(int i = 0; i < graph_num_vertices(g); i++){
+        path[i] = -1;
+    }
     int path_size = 0;
 
     Heap *h = heap_init(graph_num_vertices(g));
@@ -43,11 +46,16 @@ int *dijkstra_algorithm(Graph *g, int s, int t) {
             double w = graph_get_weight(g, u, v);
             __dijkstra_relax(h, u_priority, v, w);
         }
-
         list_iterator_free(it);
     }
 
     heap_destroy(h);
 
+    for(int i = 0; i < path_size - 1; i++){
+        if(path[i]==t) break;
+        cost += graph_get_weight(g, path[i], path[i + 1]);
+    }
+
+    printf("Cost: %lf\n", cost);
     return path;
 }
