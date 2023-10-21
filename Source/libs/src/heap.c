@@ -33,10 +33,10 @@ void __heap_swap(Heap *h, int i, int j) {
     h->data[i] ^= h->data[j];
     h->data[j] ^= h->data[i];
     h->data[i] ^= h->data[j];
-    
-    h->priority[i] += h->priority[j];
-    h->priority[j] = h->priority[i] - h->priority[j];
-    h->priority[i] -= h->priority[j];
+
+    double aux = h->priority[i];
+    h->priority[i] = h->priority[j];
+    h->priority[j] = aux;
 
     h->map[h->data[i]] = i;
     h->map[h->data[j]] = j;
