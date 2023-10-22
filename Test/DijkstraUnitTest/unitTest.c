@@ -16,11 +16,16 @@ int main(int argc, char** argv){
     graph_add_directed_edge(g, 2, 3, 8.0);
     graph_add_directed_edge(g, 4, 3, 9.0);
     
-    int* dijkstra = dijkstra_algorithm(g, 0, 1);
+    //int* dijkstra = dijkstra_algorithm(g, 0, 0); // correct: 0 -1 -1 -1 -1 ||| Output: 0 -1 -1 -1 -1  [CORRECT] ||| Cost: CORRECT
+    //int* dijkstra = dijkstra_algorithm(g, 0, 1); // correct: 0 2 1 -1 -1   ||| Output: 0 2 4 1 -1     [ERROR]   ||| Cost: CORRECT
+    //int* dijkstra = dijkstra_algorithm(g, 0, 2); // correct: 0 2 -1 -1 -1  ||| Output: 0 2 -1 -1 -1   [CORRECT] ||| Cost: CORRECT
+    //int* dijkstra = dijkstra_algorithm(g, 0, 3); // correct: 0 2 1 3 -1    ||| Output: 0 2 4 1 3      [ERROR]   ||| Cost: CORRECT
+    int* dijkstra = dijkstra_algorithm(g, 0, 4); // correct: 0 2 4 -1 -1   ||| Output: 0 2 4 -1 -1    [CORRECT] ||| Cost: CORRECT
     
     for(int i = 0; i < 5; i++){
         printf("%d ", dijkstra[i]);
     }
+    printf("\n cost: %lf\n", dijkstra_algorithm_cost(g, 0, 4));
 
     return 0;
 }
