@@ -1,5 +1,6 @@
 #include "../libs/heap.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 struct Heap {
     int *data;
@@ -52,8 +53,8 @@ void __heapify_up(Heap *h, int i) {
 }
 
 void __heapify_down(Heap *h, int i) {
-    int left = (i >> 2) + 1;
-    int right = (i >> 2) + 2;
+    int left = (i << 1) + 1;
+    int right = (i << 1) + 2;
     int min = i;
 
     if(left >= 0 && left < h->size && h->priority[left] < h->priority[i])
@@ -66,6 +67,29 @@ void __heapify_down(Heap *h, int i) {
         __heapify_down(h, min);
     }
 }
+
+void __heapify_down_it(Heap *h, int i) {
+    int min = i;
+    int left, right;
+
+    while (1) {
+        left = (i << 1) + 1;
+        right = (i << 1) + 2;
+
+        if (left >= 0 && left < h->size && h->priority[left] < h->priority[i])
+            min = left;
+        if (right >= 0 && right < h->size && h->priority[right] < h->priority[min])
+            min = right;
+
+        if (min != i) {
+            __heap_swap(h, i, min);
+            i = min;
+        } else {
+            break;
+        }
+    }    
+}
+
 
 void heap_insert(Heap *h, int data, double priority) {
     h->data[h->size] = data;
