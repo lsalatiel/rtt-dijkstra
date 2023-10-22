@@ -10,4 +10,6 @@
 
 int *dijkstra_algorithm(Graph *g, int s, int t);
 
+double dijkstra_algorithm_cost(Graph *g, int s, int t);
+
 #endif

@@ -16,6 +16,29 @@ void __dijkstra_relax(Heap *h, double *dist, double u_w, int v, double w) {
     }
 }
 
+double __get_set_cost__(double cost, char* op){
+    static double v = -1;
+    if(strcmp(op, "set") == 0){
+        v = cost;
+    }
+    else{
+        return v;
+    }
+}
+
+void __set_cost__(double cost){
+    __get_set_cost__(cost, "set");
+}
+
+double __get_cost__() {
+    return __get_set_cost__(0, "get");
+}
+
+double dijkstra_algorithm_cost(Graph *g, int s, int t){
+    dijkstra_algorithm(g, s, t);
+    return __get_cost__();
+}
+
 int *dijkstra_algorithm(Graph *g, int s, int t) {
     int *path = malloc(sizeof(int) * graph_num_vertices(g));
     for(int i = 0; i < graph_num_vertices(g); i++) path[i] = -1;
@@ -52,7 +75,7 @@ int *dijkstra_algorithm(Graph *g, int s, int t) {
 
     heap_destroy(h);
 
-    printf("Cost: %lf\n", dist[t]);
+    __set_cost__(dist[t]);
 
     return path;
 }
