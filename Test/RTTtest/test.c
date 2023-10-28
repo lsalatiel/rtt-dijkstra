@@ -3,11 +3,36 @@
 #include <string.h>
 #include "../../Source/libs/libs/graph.h"
 #include "../../Source/libs/libs/utils.h"
+#include "../../Source/libs/libs/rtt.h"
+
+typedef struct rtt_adt{
+    int a;
+    int b;
+    double rtt;
+}rtt_adt;
+
+int compare_rtt_adt(const void *a, const void *b){
+    rtt_adt *x = (rtt_adt *) a;
+    rtt_adt *y = (rtt_adt *) b;
+
+    if(x->rtt < y->rtt){
+        return -1;
+    }
+    else if(x->rtt > y->rtt){
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
 
 int main(int argc, char** argv){
     int n_vertices, n_edges;
     int n_servers, n_clients, n_monitors;
-    FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
+    //FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
+    //FILE* in = fopen("Input/N100_S20_C30_M5.txt", "r");
+    FILE* in = fopen("Input/N1000_S50_C300_M10.txt", "r");
+    //FILE* in = fopen("Input/N10000_S50_C300_M10.txt", "r");
 
     if(in == NULL){
         printf("Error opening file\n");
@@ -45,77 +70,30 @@ int main(int argc, char** argv){
     fclose(in);
 
     // RTT
-    double cost_dijkstra_s_c = -1;
-    double cost_dijkstra_c_s = -1;
-    double cost_dijkstra_s_m = -1;
-    double cost_dijkstra_m_s = -1;
-    double cost_dijkstra_m_c = -1;
-    double cost_dijkstra_c_m = -1;
+    rtt_adt rtt_adt_array[n_servers * n_clients];
     double min = 0;
+    double rtt = 0;
     double rtt_star= 0;
-    // (1, 7) = (server, client) = 1.0  RTT
-        // for m in M
-            // (1, M) + (M, 7) = 1.23
-            // pegar o minimo  
-        // 1.23/1.0 - 1 = .23 (23%)
 
     for(int i = 0; i < n_servers; i++){
-        printf("COST FROM SERVERS TO CLIENTS AND FROM CLIENTS TO SERVERS\n");
         for(int j = 0; j < n_clients; j++){
-            printf("(%d, %d): ", servers[i], clients[j]);
-            cost_dijkstra_s_c = dijkstra_algorithm_cost(g, servers[i], clients[j]);
-            cost_dijkstra_c_s = dijkstra_algorithm_cost(g, clients[j], servers[i]);
-            printf("Server %d to Client %d [RTT(%d, %d)]: %lf || ", servers[i], clients[j], servers[i], clients[j], cost_dijkstra_s_c);
-            printf("Client %d to Server %d [RTT(%d, %d)]: %lf\n", clients[j], servers[i], clients[j], servers[i], cost_dijkstra_c_s);
-
-            
-            //min = dijkstra_algorithm_cost(g, servers[i], monitors[0]) + dijkstra_algorithm_cost(g, monitors[0], clients[j]);
-            min = 150000;
+            rtt = RTT(g, servers[i], clients[j]);
             for(int k = 0; k < n_monitors; k++) {
-                rtt_star = dijkstra_algorithm_cost(g, servers[i], monitors[k]) + dijkstra_algorithm_cost(g, monitors[k], clients[j]);
-                if(rtt_star < min){
-                    printf("Monitor: %d\n", monitors[k]);
+                rtt_star = RTT(g, servers[i], monitors[k]) + RTT(g, monitors[k], clients[j]);
+                if(rtt_star < min || k == 0){
                     min = rtt_star;
                 }
             }
             rtt_star = min;
-            printf("Inflacao (SC) (rtt*: %lf): %lf\n", rtt_star, rtt_star/cost_dijkstra_s_c);
-            printf("Inflacao (CS) (rtt*: %lf): %lf\n", rtt_star, rtt_star/cost_dijkstra_c_s);
+            rtt_adt_array[i * n_clients + j].a = servers[i];
+            rtt_adt_array[i * n_clients + j].b = clients[j];
+            rtt_adt_array[i * n_clients + j].rtt = rtt_star/rtt;
         }
-
-        // printf("COST FROM SERVERS TO MONITORS\n");
-        // for(int j = 0; j < n_monitors; j++){
-        //     printf("(%d, %d): ", servers[i], monitors[j]);
-        //     cost_dijkstra_s_m = dijkstra_algorithm_cost(g, servers[i], monitors[j]);
-        //     printf("Server %d to Monitor %d [RTT(%d, %d)]: %lf\n", servers[i], monitors[j], servers[i], monitors[j], cost_dijkstra_s_m);
-        // }
-
-        // printf("COST FROM MONITORS TO SERVERS\n");
-        // for(int j = 0; j < n_servers; j++){
-        //     printf("(%d, %d): ", monitors[j], servers[i]);
-        //     cost_dijkstra_m_s = dijkstra_algorithm_cost(g, monitors[j], servers[i]);
-        //     printf("Monitor %d to Server %d [RTT(%d, %d)]: %lf\n", monitors[j], servers[i], monitors[j], servers[i], cost_dijkstra_m_s);
-        // }
-
-        
-        // printf("COST FROM MONITORS TO CLIENTS\n");
-        // for(int j = 0; j < n_clients; j++){
-        //     printf("(%d, %d): ", monitors[j], clients[j]);
-        //     cost_dijkstra_m_c = dijkstra_algorithm_cost(g, monitors[j], clients[j]);
-        //     printf("Monitor %d to Client %d [RTT(%d, %d)]: %lf\n", monitors[j], clients[j], monitors[j], clients[j], cost_dijkstra_m_c);
-        // }
-
-        
-
-        // printf("COST FROM CLIENTS TO MONITORS\n");
-        // for(int j = 0; j < n_monitors; j++){
-        //     printf("(%d, %d): ", clients[j], monitors[j]);
-        //     cost_dijkstra_c_m = dijkstra_algorithm_cost(g, clients[j], monitors[j]);
-        //     printf("Client %d to Monitor %d [RTT(%d, %d)]: %lf\n", clients[j], monitors[j], clients[j], monitors[j], cost_dijkstra_c_m);
-        // }
-
-        printf("===========================================================================================================\n\n");
     }
+    qsort(rtt_adt_array, n_servers * n_clients, sizeof(rtt_adt), compare_rtt_adt);
+    //for(int i = 0; i < n_servers * n_clients; i++){
+    //    printf("%d %d %.16lf\n", rtt_adt_array[i].a, rtt_adt_array[i].b, rtt_adt_array[i].rtt);
+    //}
 
     return 0;
 }

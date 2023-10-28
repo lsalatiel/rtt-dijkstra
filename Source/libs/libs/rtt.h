@@ -8,7 +8,14 @@
 #include "../libs/heap.h"
 #include "../libs/item.h"
 
-
-
+/**
+ * @brief 
+ * 
+ * @param g 
+ * @param a 
+ * @param b 
+ * @return double 
+ */
+double RTT(Graph *g, int a, int b);
 
 #endif
