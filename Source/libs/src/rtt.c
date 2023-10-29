@@ -4,8 +4,7 @@
 #include "../libs/graph.h"
 #include "../libs/utils.h"
 #include "../libs/heap.h"
-#include "../libs/item.h"
 
-double RTT(Graph *g, int a, int b){
-    return dijkstra_algorithm_cost(g, a, b) + dijkstra_algorithm_cost(g, b, a);
+double RTT(Graph *g, int a, int b, double *dists_a, double *dists_b) {
+    return dists_a[b] + dists_b[a];
 }
