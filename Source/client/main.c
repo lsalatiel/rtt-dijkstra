@@ -30,8 +30,8 @@ int compare_rtt_adt(const void *a, const void *b){
 int main(int argc, char** argv){
     int n_vertices, n_edges;
     int n_servers, n_clients, n_monitors;
-    FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
-    //FILE* in = fopen("Input/N100_S20_C30_M5.txt", "r");
+    //FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
+    FILE* in = fopen("Input/N100_S20_C30_M5.txt", "r");
     //FILE* in = fopen("Input/N1000_S50_C300_M10.txt", "r");
     //FILE* in = fopen("Input/N10000_S50_C300_M10.txt", "r");
 
@@ -96,10 +96,5 @@ int main(int argc, char** argv){
         printf("%d %d %.16lf\n", rtt_adt_array[i].a, rtt_adt_array[i].b, rtt_adt_array[i].rtt);
     }
 
-    graph_destroy(g);
-    free(servers);
-    free(clients);
-    free(monitors);
-    
     return 0;
 }
