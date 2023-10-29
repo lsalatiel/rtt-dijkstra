@@ -35,7 +35,8 @@ double __get_cost__() {
 }
 
 double dijkstra_algorithm_cost(Graph *g, int s, int t){
-    dijkstra_algorithm(g, s, t);
+    int* path = dijkstra_algorithm(g, s, t);
+    free(path);
     return __get_cost__();
 }
 
@@ -76,6 +77,8 @@ int *dijkstra_algorithm(Graph *g, int s, int t) {
     heap_destroy(h);
 
     __set_cost__(dist[t]);
+
+    free(dist);
 
     return path;
 }
