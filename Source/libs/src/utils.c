@@ -8,14 +8,14 @@
 #include <stdlib.h>
 #include <math.h>
 
-void __dijkstra_relax(Heap *h, double *dist, double u_w, int v, double w) {
+void __dijkstra_relax(Heap *h, double u_w, int v, double w) {
     double new_priority = u_w + w;
     if(heap_get_priority(h, v) > new_priority) {
         heap_decrease_key(h, v, new_priority);
     }
 }
 
-double *dijkstra_algorithm(Graph *g, int s, int t) {
+double *dijkstra_algorithm(Graph *g, int s) {
     Heap *h = heap_init(graph_num_vertices(g));
     double *dist = malloc(sizeof(double) * graph_num_vertices(g));
 
@@ -39,7 +39,7 @@ double *dijkstra_algorithm(Graph *g, int s, int t) {
             if(dist[v] > u_priority + w) {
                 dist[v] = u_priority + w;
             }
-            __dijkstra_relax(h, dist, u_priority, v, w);
+            __dijkstra_relax(h, u_priority, v, w);
         }
 
         list_iterator_free(it);

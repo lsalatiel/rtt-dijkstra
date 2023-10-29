@@ -9,13 +9,12 @@
 /**
  * @brief 
  * 
- * @param g 
  * @param a 
  * @param b 
  * @param dists_a
  * @param dists_b
  * @return double 
  */
-double RTT(Graph *g, int a, int b, double *dists_a, double *dists_b);
+double RTT(int a, int b, double *dists_a, double *dists_b);
 
 #endif

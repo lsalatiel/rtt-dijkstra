@@ -68,29 +68,6 @@ void __heapify_down(Heap *h, int i) {
     }
 }
 
-void __heapify_down_it(Heap *h, int i) {
-    int min = i;
-    int left, right;
-
-    while (1) {
-        left = (i << 1) + 1;
-        right = (i << 1) + 2;
-
-        if (left >= 0 && left < h->size && h->priority[left] < h->priority[i])
-            min = left;
-        if (right >= 0 && right < h->size && h->priority[right] < h->priority[min])
-            min = right;
-
-        if (min != i) {
-            __heap_swap(h, i, min);
-            i = min;
-        } else {
-            break;
-        }
-    }    
-}
-
-
 void heap_insert(Heap *h, int data, double priority) {
     h->data[h->size] = data;
     h->map[data] = h->size;

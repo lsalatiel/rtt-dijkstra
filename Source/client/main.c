@@ -27,7 +27,7 @@ int compare_rtt_adt(const void *a, const void *b){
     }
 }
 
-int main(int argc, char** argv){
+int main() {
     int n_vertices, n_edges;
     int n_servers, n_clients, n_monitors;
     FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
@@ -78,24 +78,24 @@ int main(int argc, char** argv){
 
     double **dist_servers = calloc(sizeof(double *), n_servers);
     for(int i = 0; i < n_servers; i++) {
-        dist_servers[i] = dijkstra_algorithm(g, servers[i], clients[0]);
+        dist_servers[i] = dijkstra_algorithm(g, servers[i]);
     }
 
     double **dist_clients = malloc(sizeof(double *) * n_clients);
     for(int i = 0; i < n_clients; i++) {
-        dist_clients[i] = dijkstra_algorithm(g, clients[i], servers[0]);
+        dist_clients[i] = dijkstra_algorithm(g, clients[i]);
     }
 
     double **dist_monitors = malloc(sizeof(double *) * n_monitors);
     for(int i = 0; i < n_monitors; i++) {
-        dist_monitors[i] = dijkstra_algorithm(g, monitors[i], clients[0]);
+        dist_monitors[i] = dijkstra_algorithm(g, monitors[i]);
     }
 
-    for(int i = 0; i < n_servers; i++){
-        for(int j = 0; j < n_clients; j++){
-            rtt = RTT(g, servers[i], clients[j], dist_servers[i], dist_clients[j]);
+    for(int i = 0; i < n_servers; i++) {
+        for(int j = 0; j < n_clients; j++) {
+            rtt = RTT(servers[i], clients[j], dist_servers[i], dist_clients[j]);
             for(int k = 0; k < n_monitors; k++) {
-                rtt_star = RTT(g, servers[i], monitors[k], dist_servers[i], dist_monitors[k]) + RTT(g, monitors[k], clients[j], dist_monitors[k], dist_clients[j]);
+                rtt_star = RTT(servers[i], monitors[k], dist_servers[i], dist_monitors[k]) + RTT(monitors[k], clients[j], dist_monitors[k], dist_clients[j]);
                 if(rtt_star < min || k == 0){
                     min = rtt_star;
                 }

@@ -5,6 +5,6 @@
 #include "../libs/utils.h"
 #include "../libs/heap.h"
 
-double RTT(Graph *g, int a, int b, double *dists_a, double *dists_b) {
+double RTT(int a, int b, double *dists_a, double *dists_b) {
     return dists_a[b] + dists_b[a];
 }
