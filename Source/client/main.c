@@ -3,14 +3,14 @@
 #include <string.h>
 #include "../libs/libs/graph.h"
 #include "../libs/libs/heap.h"
-#include "../libs/libs/item.h"
 #include "../libs/libs/rtt.h"
+#include "../libs/libs/utils.h"
 
 typedef struct rtt_adt{
     int a;
     int b;
     double rtt;
-}rtt_adt;
+} rtt_adt;
 
 int compare_rtt_adt(const void *a, const void *b){
     rtt_adt *x = (rtt_adt *) a;
@@ -30,10 +30,10 @@ int compare_rtt_adt(const void *a, const void *b){
 int main(int argc, char** argv){
     int n_vertices, n_edges;
     int n_servers, n_clients, n_monitors;
-    //FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
-    FILE* in = fopen("Input/N100_S20_C30_M5.txt", "r");
-    //FILE* in = fopen("Input/N1000_S50_C300_M10.txt", "r");
-    //FILE* in = fopen("Input/N10000_S50_C300_M10.txt", "r");
+    FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
+    /* FILE* in = fopen("Input/N100_S20_C30_M5.txt", "r"); */
+    /* FILE* in = fopen("Input/N1000_S50_C300_M10.txt", "r"); */
+    /* FILE* in = fopen("Input/N10000_S50_C300_M10.txt", "r"); */
 
     if(in == NULL){
         printf("Error opening file\n");
@@ -76,11 +76,26 @@ int main(int argc, char** argv){
     double rtt = 0;
     double rtt_star= 0;
 
+    double **dist_servers = calloc(sizeof(double *), n_servers);
+    for(int i = 0; i < n_servers; i++) {
+        dist_servers[i] = dijkstra_algorithm(g, servers[i], clients[0]);
+    }
+
+    double **dist_clients = malloc(sizeof(double *) * n_clients);
+    for(int i = 0; i < n_clients; i++) {
+        dist_clients[i] = dijkstra_algorithm(g, clients[i], servers[0]);
+    }
+
+    double **dist_monitors = malloc(sizeof(double *) * n_monitors);
+    for(int i = 0; i < n_monitors; i++) {
+        dist_monitors[i] = dijkstra_algorithm(g, monitors[i], clients[0]);
+    }
+
     for(int i = 0; i < n_servers; i++){
         for(int j = 0; j < n_clients; j++){
-            rtt = RTT(g, servers[i], clients[j]);
+            rtt = RTT(g, servers[i], clients[j], dist_servers[i], dist_clients[j]);
             for(int k = 0; k < n_monitors; k++) {
-                rtt_star = RTT(g, servers[i], monitors[k]) + RTT(g, monitors[k], clients[j]);
+                rtt_star = RTT(g, servers[i], monitors[k], dist_servers[i], dist_monitors[k]) + RTT(g, monitors[k], clients[j], dist_monitors[k], dist_clients[j]);
                 if(rtt_star < min || k == 0){
                     min = rtt_star;
                 }
@@ -91,6 +106,24 @@ int main(int argc, char** argv){
             rtt_adt_array[i * n_clients + j].rtt = rtt_star/rtt;
         }
     }
+
+    for(int i = 0; i < n_servers; i++)
+        free(dist_servers[i]);
+    free(dist_servers);
+
+    for(int i = 0; i < n_clients; i++)
+        free(dist_clients[i]);
+    free(dist_clients);
+
+    for(int i = 0; i < n_monitors; i++)
+        free(dist_monitors[i]);
+    free(dist_monitors);
+
+    free(servers);
+    free(clients);
+    free(monitors);
+    graph_destroy(g);
+
     qsort(rtt_adt_array, n_servers * n_clients, sizeof(rtt_adt), compare_rtt_adt);
     for(int i = 0; i < n_servers * n_clients; i++){
         printf("%d %d %.16lf\n", rtt_adt_array[i].a, rtt_adt_array[i].b, rtt_adt_array[i].rtt);
