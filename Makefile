@@ -1,6 +1,15 @@
+CC = gcc
+override CFLAGS += -Wall -Wextra -g -lm
+MAIN = main
+EXEC = Source/client/main.c Source/libs/src/*.c
+EXEC_DIJKSTRA_TEST = Test/DijkstraTest/*.c Source/libs/src/*.c
+EXEC_RTT_TEST = Test/RTTtest/*.c Source/libs/src/*.c
+
 all:
-	gcc -o main Source/client/main.c Source/libs/src/*.c -g
+	$(CC) $(CFLAGS) -o $(MAIN) $(EXEC) 
 DijkstraTest:
-	gcc -o main Test/DijkstraTest/*.c Source/libs/src/*.c -g
+	$(CC) $(CFLAGS) -o $(MAIN) $(EXEC_DIJKSTRA_TEST)
 RTTTest:
-	gcc -o main Test/RTTtest/*.c Source/libs/src/*.c -g
+	$(CC) $(CFLAGS) -o $(MAIN) $(EXEC_RTT_TEST)
+clean:
+	rm -rf $(MAIN)
