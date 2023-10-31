@@ -27,13 +27,15 @@ int compare_rtt_adt(const void *a, const void *b){
     }
 }
 
-int main() {
+int main(int argc, char **argv) {
+    if(argc != 3){
+        printf("Usage: %s <input_file> <output_file>\n", argv[0]);
+        return 1;
+    }
+
     int n_vertices, n_edges;
     int n_servers, n_clients, n_monitors;
-    FILE* in = fopen("Input/N10_S3_C3_M3.txt", "r");
-    /* FILE* in = fopen("Input/N100_S20_C30_M5.txt", "r"); */
-    /* FILE* in = fopen("Input/N1000_S50_C300_M10.txt", "r"); */
-    /* FILE* in = fopen("Input/N10000_S50_C300_M10.txt", "r"); */
+    FILE* in = fopen(argv[1], "r");
 
     if(in == NULL){
         printf("Error opening file\n");
@@ -59,6 +61,11 @@ int main() {
         fscanf(in, "%d", &monitors[i]);
     }
 
+#ifdef BENCHMARK
+    #include <time.h>
+    clock_t setup_time = clock();
+#endif
+
     Graph* g = graph_construct(n_vertices);
 
     for(int i = 0; i<n_edges; i++){
@@ -68,6 +75,10 @@ int main() {
         graph_add_directed_edge(g, v1, v2, weight);
     }
 
+#ifdef BENCHMARK
+    printf("Graph construction: %lf\n", (double)(clock() - setup_time) / CLOCKS_PER_SEC);
+#endif
+
     fclose(in);
 
     // RTT
@@ -76,20 +87,42 @@ int main() {
     double rtt = 0;
     double rtt_star= 0;
 
-    double **dist_servers = calloc(sizeof(double *), n_servers);
+#ifdef BENCHMARK
+    clock_t servers_time = clock();
+#endif
+
+    double **dist_servers = malloc(sizeof(double *) * n_servers);
     for(int i = 0; i < n_servers; i++) {
         dist_servers[i] = dijkstra_algorithm(g, servers[i]);
     }
+
+#ifdef BENCHMARK
+    printf("Getting servers distances: %lf\n", (double)(clock() - servers_time) / CLOCKS_PER_SEC);
+
+    clock_t clients_time = clock();
+#endif
 
     double **dist_clients = malloc(sizeof(double *) * n_clients);
     for(int i = 0; i < n_clients; i++) {
         dist_clients[i] = dijkstra_algorithm(g, clients[i]);
     }
 
+#ifdef BENCHMARK
+    printf("Getting clients distances: %lf\n", (double)(clock() - clients_time) / CLOCKS_PER_SEC);
+
+    clock_t monitors_time = clock();
+#endif
+
     double **dist_monitors = malloc(sizeof(double *) * n_monitors);
     for(int i = 0; i < n_monitors; i++) {
         dist_monitors[i] = dijkstra_algorithm(g, monitors[i]);
     }
+
+#ifdef BENCHMARK
+    printf("Getting monitors distances: %lf\n", (double)(clock() - monitors_time) / CLOCKS_PER_SEC);
+
+    clock_t rtt_time = clock();
+#endif
 
     for(int i = 0; i < n_servers; i++) {
         for(int j = 0; j < n_clients; j++) {
@@ -106,6 +139,10 @@ int main() {
             rtt_adt_array[i * n_clients + j].rtt = rtt_star/rtt;
         }
     }
+
+#ifdef BENCHMARK
+    printf("Calulating RTT: %lf\n", (double)(clock() - rtt_time) / CLOCKS_PER_SEC);
+#endif
 
     for(int i = 0; i < n_servers; i++)
         free(dist_servers[i]);
@@ -124,10 +161,23 @@ int main() {
     free(monitors);
     graph_destroy(g);
 
+#ifdef BENCHMARK
+    clock_t sort_time = clock();
+#endif
+
     qsort(rtt_adt_array, n_servers * n_clients, sizeof(rtt_adt), compare_rtt_adt);
+
+#ifdef BENCHMARK
+    printf("Sorting RTT: %lf\n", (double)(clock() - sort_time) / CLOCKS_PER_SEC);
+#endif
+
+    FILE *out = fopen(argv[2], "w");
+
     for(int i = 0; i < n_servers * n_clients; i++){
-        printf("%d %d %.16lf\n", rtt_adt_array[i].a, rtt_adt_array[i].b, rtt_adt_array[i].rtt);
+        fprintf(out, "%d %d %.16lf\n", rtt_adt_array[i].a, rtt_adt_array[i].b, rtt_adt_array[i].rtt);
     }
+
+    fclose(out);
 
     return 0;
 }
