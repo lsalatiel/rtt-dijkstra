@@ -4,6 +4,7 @@
 #include "../libs/graph.h"
 #include "../libs/linked_list.h"
 #include "../libs/heap.h"
+#include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -20,8 +21,8 @@ double *dijkstra_algorithm(Graph *g, int s) {
     double *dist = malloc(sizeof(double) * graph_num_vertices(g));
 
     for(int i = 0; i < graph_num_vertices(g); i++) {
-        heap_insert(h, i, i == s ? 0.0 : INFINITY);
-        dist[i] = i == s ? 0 : INFINITY;
+        heap_insert(h, i, i == s ? 0.0 : DBL_MAX);
+        dist[i] = i == s ? 0 : DBL_MAX;
     }
 
     LinkedList **l = graph_adjacency_list(g);
