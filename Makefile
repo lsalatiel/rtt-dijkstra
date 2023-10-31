@@ -1,5 +1,5 @@
 CC = gcc
-override CFLAGS += -Wall -Wextra -O3 -g -lm
+override CFLAGS += -O3 -g -lm
 MAIN = trab2
 EXEC = Source/client/main.c Source/libs/src/*.c
 
