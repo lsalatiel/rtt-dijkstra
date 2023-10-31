@@ -3,7 +3,6 @@
 #include <string.h>
 #include "../libs/libs/graph.h"
 #include "../libs/libs/heap.h"
-#include "../libs/libs/rtt.h"
 #include "../libs/libs/utils.h"
 
 typedef struct rtt_adt{

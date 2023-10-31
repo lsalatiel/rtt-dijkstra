@@ -9,6 +9,10 @@
 #include <stdlib.h>
 #include <math.h>
 
+double RTT(int a, int b, double *dists_a, double *dists_b) {
+    return dists_a[b] + dists_b[a];
+}
+
 void __dijkstra_relax(Heap *h, double u_w, int v, double w) {
     double new_priority = u_w + w;
     if(heap_get_priority(h, v) > new_priority) {
