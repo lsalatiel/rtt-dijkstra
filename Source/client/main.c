@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     fclose(in);
 
     // RTT
-    rtt_adt rtt_adt_array[n_servers * n_clients];
+    rtt_adt *rtt_adt_array = malloc(sizeof(rtt_adt) * n_servers * n_clients);
     double min = 0;
     double rtt = 0;
     double rtt_star= 0;
@@ -176,6 +176,8 @@ int main(int argc, char **argv) {
     for(int i = 0; i < n_servers * n_clients; i++){
         fprintf(out, "%d %d %.16lf\n", rtt_adt_array[i].a, rtt_adt_array[i].b, rtt_adt_array[i].rtt);
     }
+
+    free(rtt_adt_array);
 
     fclose(out);
 
