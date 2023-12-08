@@ -4,6 +4,7 @@
 #include "../libs/graph.h"
 #include "../libs/linked_list.h"
 #include "../libs/heap.h"
+#include "../libs/PQ.h"
 #include <float.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,28 +14,28 @@ double RTT(int a, int b, double *dists_a, double *dists_b) {
     return dists_a[b] + dists_b[a];
 }
 
-void __dijkstra_relax(Heap *h, double u_w, int v, double w) {
+void __dijkstra_relax(PQ *h, double u_w, int v, double w) {
     double new_priority = u_w + w;
-    if(heap_get_priority(h, v) > new_priority) {
-        heap_decrease_key(h, v, new_priority);
+    if(PQ_get_priority(h, v) > new_priority) {
+        PQ_decrease_key(h, v, new_priority);
     }
 }
 
 double *dijkstra_algorithm(Graph *g, int s) {
-    Heap *h = heap_init(graph_num_vertices(g));
+    PQ *h = PQ_init(graph_num_vertices(g));
     double *dist = malloc(sizeof(double) * graph_num_vertices(g));
 
     for(int i = 0; i < graph_num_vertices(g); i++) {
-        heap_insert(h, i, i == s ? 0.0 : DBL_MAX);
+        PQ_insert(h, i, i == s ? 0.0 : DBL_MAX);
         dist[i] = i == s ? 0 : DBL_MAX;
     }
 
     LinkedList **l = graph_adjacency_list(g);
 
-    while(!heap_empty(h)) {
-        int u = heap_min(h);
-        double u_priority = heap_get_priority(h, u);
-        heap_pop(h);
+    while(!PQ_empty(h)) {
+        int u = PQ_min(h);
+        double u_priority = PQ_get_priority(h, u);
+        PQ_delmin(h);
 
         ListIterator *it = list_iterator_construct(l[u]);
         if(it == NULL) continue;
@@ -50,7 +51,7 @@ double *dijkstra_algorithm(Graph *g, int s) {
         list_iterator_free(it);
     }
 
-    heap_destroy(h);
+    PQ_finish(h);
 
     return dist;
 }
